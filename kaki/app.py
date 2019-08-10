@@ -240,6 +240,19 @@ class App(BaseApp):
                 self.set_error(repr(e), traceback.format_exc())
                 return
 
+        if event.src_path.endswith(".kv"):
+            origin = str(event.src_path).split('.')
+            main_path = origin[0]
+            if 'main.py' in os.listdir(main_path):
+                new_path = os.path.join(main_path,'main.py')
+                try:
+                    Builder.unload_file(new_path)
+                    self._reload_py(new_path)
+                except Exception as e:
+                    import traceback
+                    self.set_error(repr(e), traceback.format_exc())
+                    return
+
         print("reload cause of", event)
 
         Clock.unschedule(self.rebuild)
